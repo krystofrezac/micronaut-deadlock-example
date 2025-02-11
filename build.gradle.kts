@@ -36,6 +36,7 @@ dependencies {
     testImplementation("io.micronaut:micronaut-http-client")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 }
 
 

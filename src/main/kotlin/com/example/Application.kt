@@ -37,28 +37,37 @@ fun main(args: Array<String>) {
 }
 
 @Controller
-class SomeController(private val someService: SomeService) {
+class SomeController(
+    private val someService: SomeService,
+) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @Get
-    suspend fun process(): Unit = coroutineScope {
-        // We want to change dispatcher to DefaultDispatcher and configure coroutine contexts
-        async(Dispatchers.Default) {
-            logger.info("Processing")
-            someService.saveInTransaction()
-            logger.info("Finished")
-        }.await()
-    }
+    suspend fun process(): String =
+        coroutineScope {
+            // We want to change dispatcher to DefaultDispatcher and configure coroutine contexts
+            async(Dispatchers.Default) {
+                logger.info("Processing")
+                someService.saveInTransaction()
+                logger.info("Finished")
+
+                // Returning non-empty body so that the client it tests work
+                "a"
+            }.await()
+        }
 }
 
 @Singleton
-open class SomeService(private val someRepository: SomeRepository) {
+open class SomeService(
+    private val someRepository: SomeRepository,
+) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @Transactional
     open suspend fun saveInTransaction() {
         someRepository.save(SomeEntity())
 
+        // To simulate call to suspend function
         delay(1.seconds)
 
         // There needs to be something blocking code after suspended function call
